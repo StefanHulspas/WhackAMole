@@ -62,11 +62,18 @@ public class GameController : MonoBehaviour
 
 	private void OnEnable()
 	{
-		StartCoroutine(StartGame());
+		if (!isSetup)
+			StartCoroutine(DelayedStart());
+		else
+			StartGame();
 	}
 
-	public IEnumerator StartGame() {
+	private IEnumerator DelayedStart() {
 		yield return new WaitUntil(() => isSetup);
+		StartGame();
+	}
+
+	private void StartGame() {
 		ResetGame();
 		PreCreateMoles();
 	}
