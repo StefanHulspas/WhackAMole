@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class MoleController : MonoBehaviour
 {
+    public MoleBehaviour Behaviour;
+
 	[SerializeField]
 	private Transform _background = default;
 	[SerializeField]
@@ -21,15 +23,16 @@ public class MoleController : MonoBehaviour
 		}
 	}
 
-	public void Setup(float size) {
+	public void Setup(float size, Action<MoleController> moleTimeout) {
 		_background.localScale = new Vector3(size * moleSizePercent, .1f, size * moleSizePercent);
 		_background.gameObject.SetActive(false);
-	}
+        timeoutCallback = moleTimeout;
+    }
 
-	public void PopUpMole(float baseMoleActiveTime, Action<MoleController> moleTimeout) {
+	public void PopUpMole(float baseMoleActiveTime, MoleBehaviour newBehaviour) {
 		timeoutTime = Time.timeSinceLevelLoad + baseMoleActiveTime;
-		timeoutCallback = moleTimeout;
 		_background.gameObject.SetActive(true);
+        Behaviour = newBehaviour;
 	}
 
 	public void PopDownMole() {

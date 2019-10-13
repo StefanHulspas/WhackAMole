@@ -22,7 +22,9 @@ public class GameController : MonoBehaviour
 	private float _baseMoleActiveTime = 2f;
 	[SerializeField]
 	private MoleController _molePrefab = default;
-	[SerializeField]
+    [SerializeField]
+    private List<MoleBehaviour> _possibleMoleBehaviours = new List<MoleBehaviour>();
+    [SerializeField]
 	private LayerMask _moleLayerMask = default;
 
 
@@ -44,6 +46,7 @@ public class GameController : MonoBehaviour
 
 	private float _gameTime;
 	private float _nextMoleSpawn;
+    private float _totalBehaviourChance = 0;
 
 	public int GameScore { get; private set; }
 
@@ -57,7 +60,13 @@ public class GameController : MonoBehaviour
 
 		_screenBotLeft = _mainCamera.ScreenToWorldPoint(new Vector3(Screen.width * _fieldAnchorMin.x, Screen.height * _fieldAnchorMin.y, _mainCamera.transform.position.y));
 		_screenTopRight = _mainCamera.ScreenToWorldPoint(new Vector3(Screen.width * _fieldAnchorMax.x, Screen.height * _fieldAnchorMax.y, _mainCamera.transform.position.y));
-		isSetup = true;
+
+        for (int i = 0; i < _possibleMoleBehaviours.Count; i++)
+        {
+            _totalBehaviourChance += _possibleMoleBehaviours[i]._ChanceForBehaviour;
+        }
+
+        isSetup = true;
 	}
 
 	private void OnEnable()
@@ -113,7 +122,7 @@ public class GameController : MonoBehaviour
 			for (int y = 0; y < _gridSize.y; y++) {
 				Vector3 position = new Vector3(botMid.x - moleSize * _gridSize.x / 2 + moleSize / 2 + x * moleSize, _screenBotLeft.y, _screenBotLeft.z + moleSize / 2 + y * moleSize);
 				MoleController newMole = Instantiate(_molePrefab, position, Quaternion.identity, _moleCollection);
-				newMole.Setup(moleSize);
+				newMole.Setup(moleSize, MoleTimeout);
 				_inactiveMoles.Add(newMole);
 			}
 		}
@@ -140,7 +149,10 @@ public class GameController : MonoBehaviour
 			{
 				MoleController moleController = raycastHit.collider.transform.GetComponentInParent<MoleController>();
 				MoleHit(moleController);
-			}
+			} else
+            {
+                MissedMole();
+            }
 		}
 	}
 
@@ -157,14 +169,22 @@ public class GameController : MonoBehaviour
 				{
 					MoleController moleController = raycastHit.collider.transform.GetComponentInParent<MoleController>();
 					MoleHit(moleController);
-				}
+				} else
+                {
+                    MissedMole();
+                }
 			}
 		}
 	}
 
-	private void MoleHit(MoleController moleController)
+    private void MissedMole()
+    {
+
+    }
+
+    private void MoleHit(MoleController moleController)
 	{
-		GameScore += 10;
+		GameScore += moleController.Behaviour._scoreAdjustmentOnClick;
 		UpdateScore(GameScore);
 		moleController.PopDownMole();
 		_inactiveMoles.Add(moleController);
@@ -190,12 +210,23 @@ public class GameController : MonoBehaviour
 	{
 		if (_inactiveMoles.Count == 0) return;
 		MoleController MoleToSpawn = _inactiveMoles[Random.Range(0, _inactiveMoles.Count - 1)];
-		MoleToSpawn.PopUpMole(_baseMoleActiveTime, MoleTimeout);
+		MoleToSpawn.PopUpMole(_baseMoleActiveTime, GetRandomMoleBehaviour());
 		_inactiveMoles.Remove(MoleToSpawn);
 		_activeMoles.Add(MoleToSpawn);
 	}
 
-	private void MoleTimeout(MoleController timedoutMole) {
+    private MoleBehaviour GetRandomMoleBehaviour()
+    {
+        float chance = Random.Range(0, _totalBehaviourChance);
+        for (int i = 0; i < _possibleMoleBehaviours.Count; i++)
+        {
+            chance -= _possibleMoleBehaviours[i]._ChanceForBehaviour;
+            if (chance <= 0) return _possibleMoleBehaviours[i];
+        }
+        return _possibleMoleBehaviours[_possibleMoleBehaviours.Count - 1];
+    }
+
+    private void MoleTimeout(MoleController timedoutMole) {
 		_activeMoles.Remove(timedoutMole);
 		_inactiveMoles.Add(timedoutMole);
 	}
