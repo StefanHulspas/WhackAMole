@@ -4,7 +4,7 @@ using UnityEngine;
 public class MoleController : MonoBehaviour
 {
 	[SerializeField]
-	private Transform _background;
+	private Transform _background = default;
 	[SerializeField]
 	private float moleSizePercent = .9f;
 

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class GameController : MonoBehaviour
@@ -7,9 +9,9 @@ public class GameController : MonoBehaviour
 	[SerializeField]
 	private Vector2 _gridSize = new Vector2(2, 2);
 	[SerializeField]
-	private Vector2 _FieldAnchorMin = new Vector2(.05f, .05f);
+	private Vector2 _fieldAnchorMin = new Vector2(.05f, .05f);
 	[SerializeField]
-	private Vector2 _FieldAnchorMax= new Vector2(.95f, .8f);
+	private Vector2 _fieldAnchorMax= new Vector2(.95f, .8f);
 
 	[Header("Game Settings")]
 	[SerializeField]
@@ -19,14 +21,20 @@ public class GameController : MonoBehaviour
 	[SerializeField]
 	private float _baseMoleActiveTime = 2f;
 	[SerializeField]
-	private MoleController _molePrefab;
+	private MoleController _molePrefab = default;
 	[SerializeField]
-	private LayerMask _moleLayerMask;
+	private LayerMask _moleLayerMask = default;
 
 
 	[Header("Game Variables In Scene")]
 	[SerializeField]
 	private Camera _mainCamera;
+	[SerializeField]
+	private TMP_Text _scoreField = default;
+	[SerializeField]
+	private TMP_Text _timeField = default;
+	[SerializeField]
+	private GameObject _endGameCanvas = default;
 
 	private Vector3 _screenBotLeft;
 	private Vector3 _screenTopRight;
@@ -34,26 +42,59 @@ public class GameController : MonoBehaviour
 	private List<MoleController> _inactiveMoles = new List<MoleController>();
 	private List<MoleController> _activeMoles = new List<MoleController>();
 
-	private float nextMoleSpawn;
+	private float _gameTime;
+	private float _nextMoleSpawn;
+
+	public int GameScore { get; private set; }
+
+	private Transform _moleCollection;
+	private bool isSetup = false;
 
 	// Start is called before the first frame update
 	void Start()
 	{
 		if (_mainCamera == null) _mainCamera = Camera.main;
 
-		_screenBotLeft = _mainCamera.ScreenToWorldPoint(new Vector3(Screen.width * _FieldAnchorMin.x, Screen.height * _FieldAnchorMin.y, _mainCamera.transform.position.y));
-		_screenTopRight = _mainCamera.ScreenToWorldPoint(new Vector3(Screen.width * _FieldAnchorMax.x, Screen.height * _FieldAnchorMax.y, _mainCamera.transform.position.y));
-
-		PreCreateMoles();
-
-		nextMoleSpawn = _playtimeInSeconds - _baseTimeBetweenMoles;
+		_screenBotLeft = _mainCamera.ScreenToWorldPoint(new Vector3(Screen.width * _fieldAnchorMin.x, Screen.height * _fieldAnchorMin.y, _mainCamera.transform.position.y));
+		_screenTopRight = _mainCamera.ScreenToWorldPoint(new Vector3(Screen.width * _fieldAnchorMax.x, Screen.height * _fieldAnchorMax.y, _mainCamera.transform.position.y));
+		isSetup = true;
 	}
 
-	private void PreCreateMoles()
+	private void OnEnable()
 	{
+		StartCoroutine(StartGame());
+	}
+
+	public IEnumerator StartGame() {
+		yield return new WaitUntil(() => isSetup);
+		ResetGame();
+		PreCreateMoles();
+	}
+
+	private void UpdateScore(float newScore) {
+		_scoreField.text = $"{newScore} points";
+	}
+
+	private void ResetGame() {
+		if (_moleCollection != null)
+		{
+			_inactiveMoles.Clear();
+			_activeMoles.Clear();
+			Destroy(_moleCollection.gameObject);
+		}
+		_moleCollection = new GameObject("Mole Collection").transform;
+		_moleCollection.parent = transform;
+
+		_gameTime = 0f;
+		_nextMoleSpawn = _baseTimeBetweenMoles;
+		GameScore = 0;
+		UpdateScore(GameScore);
+
 		if (_gridSize.x <= 0) _gridSize.x = 1;
 		if (_gridSize.y <= 0) _gridSize.y = 1;
+	}
 
+	private void PreCreateMoles() {
 		Vector3 botMid = new Vector3((_screenBotLeft.x + _screenTopRight.x) / 2, _screenBotLeft.y, _screenBotLeft.z);
 		float screenWorldWidth = _screenTopRight.x - _screenBotLeft.x;
 		float screenWorldHeight = _screenTopRight.z - _screenBotLeft.z;
@@ -64,7 +105,7 @@ public class GameController : MonoBehaviour
 		for (int x = 0; x < _gridSize.x; x++) {
 			for (int y = 0; y < _gridSize.y; y++) {
 				Vector3 position = new Vector3(botMid.x - moleSize * _gridSize.x / 2 + moleSize / 2 + x * moleSize, _screenBotLeft.y, _screenBotLeft.z + moleSize / 2 + y * moleSize);
-				MoleController newMole = Instantiate(_molePrefab, position, Quaternion.identity, transform);
+				MoleController newMole = Instantiate(_molePrefab, position, Quaternion.identity, _moleCollection);
 				newMole.Setup(moleSize);
 				_inactiveMoles.Add(newMole);
 			}
@@ -91,8 +132,7 @@ public class GameController : MonoBehaviour
 			if (Physics.Raycast(ray, out raycastHit, 1000, _moleLayerMask))
 			{
 				MoleController moleController = raycastHit.collider.transform.GetComponentInParent<MoleController>();
-				moleController.PopDownMole();
-				_inactiveMoles.Add(moleController);
+				MoleHit(moleController);
 			}
 		}
 	}
@@ -109,21 +149,34 @@ public class GameController : MonoBehaviour
 				if (Physics.Raycast(ray, out raycastHit, 1000, _moleLayerMask))
 				{
 					MoleController moleController = raycastHit.collider.transform.GetComponentInParent<MoleController>();
-					moleController.PopDownMole();
-					_inactiveMoles.Add(moleController);
+					MoleHit(moleController);
 				}
 			}
 		}
 	}
 
+	private void MoleHit(MoleController moleController)
+	{
+		GameScore += 10;
+		UpdateScore(GameScore);
+		moleController.PopDownMole();
+		_inactiveMoles.Add(moleController);
+	}
+
 	private void HandleGameLogic()
 	{
-		_playtimeInSeconds -= Time.deltaTime;
-		if (_playtimeInSeconds <= 0) return;
-		else if (_playtimeInSeconds <= nextMoleSpawn) {
+		_gameTime += Time.deltaTime;
+		_timeField.text = (_playtimeInSeconds - _gameTime).ToString("00.00") + " s";
+		if (_gameTime >= _playtimeInSeconds) EndGame();
+		else if (_gameTime >= _nextMoleSpawn) {
 			SpawnNewMole();
-			nextMoleSpawn = _playtimeInSeconds - _baseTimeBetweenMoles;
+			_nextMoleSpawn += _baseTimeBetweenMoles;
 		}
+	}
+
+	private void EndGame() {
+		gameObject.SetActive(false);
+		_endGameCanvas.SetActive(true);
 	}
 
 	private void SpawnNewMole()
