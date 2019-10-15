@@ -195,8 +195,7 @@ public class GameController : MonoBehaviour
 	}
 
 	private void EndGame() {
-		gameObject.SetActive(false);
-		_endGameCanvas.SetActive(true);
+		MenuManager.Instance.TransitionToMenu(_endGameCanvas);
 	}
 
 	private void SpawnNewMole()

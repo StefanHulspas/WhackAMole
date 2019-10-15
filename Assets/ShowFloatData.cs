@@ -5,7 +5,7 @@ using UnityEngine;
 public class ShowFloatData : MonoBehaviour
 {
     [SerializeField]
-    private FloatData _floatValue;
+    private FloatData _floatValue = default;
     [SerializeField]
     private string _valueFormat = "F";
 

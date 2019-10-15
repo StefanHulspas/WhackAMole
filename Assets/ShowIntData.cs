@@ -5,7 +5,7 @@ using UnityEngine;
 public class ShowIntData : MonoBehaviour
 {
     [SerializeField]
-    private IntData _intValue;
+    private IntData _intValue = default;
 
     private TMP_Text _textField;
 
