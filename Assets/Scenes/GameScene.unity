@@ -4351,15 +4351,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78462b15ecbb739438aaf52355898e83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playtimeInSeconds: 30
+  _playtimeInSeconds: 60
   _baseTimeBetweenMoles: 1
   _baseMoleActiveTime: 2
+  _scoreMultiplierTimeImpact: 0.9
   _moleLayerMask:
     serializedVersion: 2
     m_Bits: 256
   _fieldController: {fileID: 1140763931}
   _mainCamera: {fileID: 963194227}
   _currentScore: {fileID: 11400000, guid: a8420ddc9c188234e94216e985e35671, type: 2}
+  _scoreMultiplier: {fileID: 11400000, guid: e326a3d770a29a042aea7059184d995d, type: 2}
+  _scoreMultiplierSteps: {fileID: 11400000, guid: a14920574067c5342bbb3ca1a95295b6,
+    type: 2}
   _timeRemaining: {fileID: 11400000, guid: c5cb3876eb531bc41b9ae18db2b43edd, type: 2}
   _endGameCanvas: {fileID: 1228310169}
 --- !u!4 &1914115507

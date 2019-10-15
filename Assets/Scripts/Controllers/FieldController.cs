@@ -82,9 +82,9 @@ public class FieldController : MonoBehaviour
 	
 	public void DisableAllMoles()
 	{
-		foreach (MoleEntity mole in _activeMoles) 
+		for(int i = _activeMoles.Count - 1; i >= 0; i--)
 		{ 
-			DisableMole(mole);
+			DisableMole(_activeMoles[i]);
 		}
 	}
 

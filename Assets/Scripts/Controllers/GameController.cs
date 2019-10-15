@@ -11,6 +11,8 @@ public class GameController : MonoBehaviour
 	[SerializeField]
 	private float _baseMoleActiveTime = 2f;
 	[SerializeField]
+	private float _scoreMultiplierTimeImpact = .95f;
+	[SerializeField]
 	private LayerMask _moleLayerMask = default;
 	[SerializeField]
 	private FieldController _fieldController = default;
@@ -21,6 +23,10 @@ public class GameController : MonoBehaviour
 	private Camera _mainCamera;
 	[SerializeField]
 	private IntData _currentScore = default;
+	[SerializeField]
+	private IntData _scoreMultiplier = default;
+	[SerializeField]
+	private IntData _scoreMultiplierSteps = default;
 	[SerializeField]
 	private FloatData _timeRemaining = default;
 	[SerializeField]
@@ -40,6 +46,8 @@ public class GameController : MonoBehaviour
 		_gameTime = 0f;
 		_nextMoleSpawn = _baseTimeBetweenMoles;
 		_currentScore.Value = 0;
+		_scoreMultiplier.Value = 1;
+		_scoreMultiplierSteps.Value = 2;
 	}
 
 	private void Update()
@@ -100,7 +108,19 @@ public class GameController : MonoBehaviour
 	}
 
 	private void ChangeScore(ScoreAdjustment adjustment) {
-		_currentScore.Value += adjustment.AdjustScoreByAmount;
+		int scoreChange = adjustment.AdjustScoreByAmount;
+		if (adjustment.ResetScoreMultiplier) {
+			_scoreMultiplier.Value = 1;
+			_scoreMultiplierSteps.Value = 2;
+		} else {
+			scoreChange *= _scoreMultiplier.Value;
+			_scoreMultiplierSteps.Value--;
+			if (_scoreMultiplierSteps.Value == 0) {
+				_scoreMultiplier++;
+				_scoreMultiplierSteps.Value = _scoreMultiplier * 2;
+			}
+		}
+		_currentScore.Value += scoreChange;
 	}
 
 	private void HandleGameLogic()
@@ -124,9 +144,14 @@ public class GameController : MonoBehaviour
 		MoleEntity newMole = _fieldController.SpawnNewMole();
 		if (newMole != null)
 		{
-			newMole.SetActive(_baseMoleActiveTime, MoleTimeout);
-			_nextMoleSpawn += _baseTimeBetweenMoles;
+			newMole.SetActive(AdjustTimeByScoreMultiplier(_baseMoleActiveTime), MoleTimeout);
+			_nextMoleSpawn += AdjustTimeByScoreMultiplier(_baseTimeBetweenMoles);
 		}
+	}
+
+	private float AdjustTimeByScoreMultiplier(float timeToAdjust) {
+		if (_scoreMultiplier.Value == 1) return timeToAdjust;
+		return timeToAdjust * Mathf.Pow(_scoreMultiplierTimeImpact, _scoreMultiplier.Value - 1);
 	}
 
 	private void MoleTimeout(MoleEntity timedoutMole)

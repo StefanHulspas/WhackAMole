@@ -48,5 +48,10 @@ namespace ScriptableDataType
 			a.Value--;
 			return a;
 		}
+
+		public static int operator *(IntData a, int b)
+		{
+			return a.Value * b;
+		}
 	}
 }
