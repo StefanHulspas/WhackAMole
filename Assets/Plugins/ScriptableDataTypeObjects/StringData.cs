@@ -23,7 +23,5 @@ namespace ScriptableDataType
 			a += b.Value;
 			return a;
 		}
-
-        
 	}
 }

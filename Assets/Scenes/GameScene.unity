@@ -1499,7 +1499,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea809814b233c304c9578b5a4f20fc6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _maxStringCharacters: 20
+  _maxStringCharacters: 8
 --- !u!114 &605184660
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2913,6 +2913,57 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1092548750}
   m_CullTransparentMesh: 0
+--- !u!1 &1140763929
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1140763930}
+  - component: {fileID: 1140763931}
+  m_Layer: 0
+  m_Name: FieldController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1140763930
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1140763929}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1388731501}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1140763931
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1140763929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8f23a6907d7728469293bce7bdeba9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _gridSize: {x: 3, y: 3}
+  _fieldAnchorMin: {x: 0.05, y: 0.05}
+  _fieldAnchorMax: {x: 0.95, y: 0.8}
+  _molePrefab: {fileID: 495546958133756345, guid: b5b4436077954f34b99d5877f0d90d7b,
+    type: 3}
+  _possibleMoleBehaviours:
+  - {fileID: 11400000, guid: cdba99f2a99483948864ccdd9a745c91, type: 2}
+  _mainCamera: {fileID: 963194227}
 --- !u!1 &1147511923
 GameObject:
   m_ObjectHideFlags: 0
@@ -3424,6 +3475,7 @@ Transform:
   m_Children:
   - {fileID: 1482188357}
   - {fileID: 1243585128}
+  - {fileID: 1140763930}
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4298,19 +4350,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78462b15ecbb739438aaf52355898e83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _gridSize: {x: 3, y: 3}
-  _fieldAnchorMin: {x: 0.05, y: 0.05}
-  _fieldAnchorMax: {x: 0.95, y: 0.8}
   _playtimeInSeconds: 30
   _baseTimeBetweenMoles: 1
   _baseMoleActiveTime: 2
-  _molePrefab: {fileID: 495546958133756345, guid: b5b4436077954f34b99d5877f0d90d7b,
-    type: 3}
-  _possibleMoleBehaviours:
-  - {fileID: 11400000, guid: cdba99f2a99483948864ccdd9a745c91, type: 2}
   _moleLayerMask:
     serializedVersion: 2
     m_Bits: 256
+  _fieldController: {fileID: 1140763931}
   _mainCamera: {fileID: 963194227}
   _currentScore: {fileID: 11400000, guid: a8420ddc9c188234e94216e985e35671, type: 2}
   _timeRemaining: {fileID: 11400000, guid: c5cb3876eb531bc41b9ae18db2b43edd, type: 2}

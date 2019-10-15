@@ -3,40 +3,47 @@ using UnityEngine;
 
 public class MoleController : MonoBehaviour
 {
-	public MoleBehaviour Behaviour;
+	public MoleBehaviour Behaviour { get; private set; }
 
 	[SerializeField]
 	private Transform _background = default;
 	[SerializeField]
-	private float moleSizePercent = .9f;
+	private float _moleSizePercent = .9f;
 
-	private bool isActive = false;
-	private float timeoutTime;
-	private Action<MoleController> timeoutCallback;
+	private bool _isActive = false;
+	private float _activeTime;
+	private Action<MoleController> _timeoutCallback;
 
 	private void Update()
 	{
-		if (!isActive) return;
-		if (Time.timeSinceLevelLoad >= timeoutTime) {
-			PopDownMole();
-			timeoutCallback(this);
+		if (!_isActive) return;
+		if (_activeTime <= 0) {
+			SetInactive();
+			_timeoutCallback(this);
 		}
 	}
 
-	public void Setup(float size, Action<MoleController> moleTimeout) {
-		_background.localScale = new Vector3(size * moleSizePercent, .1f, size * moleSizePercent);
+	public void Setup(float size) 
+	{
+		_background.localScale = new Vector3(size * _moleSizePercent, 1, size * _moleSizePercent);
 		_background.gameObject.SetActive(false);
-		timeoutCallback = moleTimeout;
 	}
 
-	public void PopUpMole(float baseMoleActiveTime, MoleBehaviour newBehaviour) {
-		timeoutTime = Time.timeSinceLevelLoad + baseMoleActiveTime;
+	public void SetBehaviour(MoleBehaviour behaviour) 
+	{
+		Behaviour = behaviour;
+	}
+
+	public void SetActive(float activeTime, Action<MoleController> timeoutCallback) 
+	{
+		_activeTime = activeTime;
 		_background.gameObject.SetActive(true);
-		Behaviour = newBehaviour;
+		_timeoutCallback = timeoutCallback;
 	}
 
-	public void PopDownMole() {
-		isActive = false;
+	public void SetInactive() 
+	{
+		_isActive = false;
 		_background.gameObject.SetActive(false);
 	}
 }

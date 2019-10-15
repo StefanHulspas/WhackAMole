@@ -14,7 +14,8 @@ public class InputFieldLimitCharacters : MonoBehaviour
 			_inputField = GetComponent<TMP_InputField>();
 	}
 
-	public void OnValueChanged(string newValue) {
+	public void OnValueChanged(string newValue) 
+	{
 		if (newValue.Length > _maxStringCharacters)
 			_inputField.text = newValue.Substring(0, _maxStringCharacters);
 	}

@@ -20,11 +20,13 @@ public class HighScoreController : MonoBehaviour
 		PlayerPrefs.Save();
 	}
 
-	public bool IsNewScoreHighScore(int newScore) {
+	public bool IsNewScoreHighScore(int newScore) 
+	{
 		return _highScores.Count < _highScoreSize || _highScores[_highScores.Count - 1]._score < newScore;
 	}
 
-	public void AddNewHighScore(PlayerHighScore newHighScore) {
+	public void AddNewHighScore(PlayerHighScore newHighScore) 
+	{
 		_highScores.Add(newHighScore);
 		_highScores.Sort();
 		while (_highScores.Count > _highScoreSize) {

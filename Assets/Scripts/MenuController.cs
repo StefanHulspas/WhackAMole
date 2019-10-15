@@ -3,6 +3,7 @@
 public class MenuController : MonoBehaviour
 {
 	public static MenuController Instance { get; private set; }
+
 	[SerializeField]
 	private GameObject _currentActiveMenu;
 
