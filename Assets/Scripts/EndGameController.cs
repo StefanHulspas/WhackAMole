@@ -1,4 +1,5 @@
-﻿using TMPro;
+﻿using ScriptableDataType;
+using TMPro;
 using UnityEngine;
 
 public class EndGameController : MonoBehaviour
@@ -8,19 +9,18 @@ public class EndGameController : MonoBehaviour
 	[SerializeField]
 	private GameObject _notHighScore = default;
 	[SerializeField]
-	private GameController _gameController = default;
-	[SerializeField]
 	private HighScoreManager _highScoreManager = default;
 	[SerializeField]
-	private TMP_Text _finalScore = default;
+	private TMP_Text _finalScoreField = default;
 	[SerializeField]
 	private TMP_InputField _nameField = default;
+    [SerializeField]
+    private IntData _finalScore = default;
 
-	private void OnEnable()
+    private void OnEnable()
 	{
-		int finalScore = _gameController.GameScore;
-		_finalScore.text = $"Congratulations!\nYou scored {finalScore} points!";
-		if (_highScoreManager.IsNewScoreHighScore(finalScore))
+		_finalScoreField.text = $"Congratulations!\nYou scored {_finalScore.Value} points!";
+		if (_highScoreManager.IsNewScoreHighScore(_finalScore.Value))
 		{
 			_newHighScore.SetActive(true);
 		} else {
@@ -29,7 +29,7 @@ public class EndGameController : MonoBehaviour
 	}
 
 	public void AddScoreToHighScoreList() {
-		PlayerHighScore newHighScore = new PlayerHighScore(_nameField.text, _gameController.GameScore);
+		PlayerHighScore newHighScore = new PlayerHighScore(_nameField.text, _finalScore.Value);
 		_highScoreManager.AddNewHighScore(newHighScore);
 		_nameField.text = string.Empty;
 		_newHighScore.SetActive(false);

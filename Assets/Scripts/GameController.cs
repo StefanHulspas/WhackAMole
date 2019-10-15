@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using ScriptableDataType;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -32,9 +33,9 @@ public class GameController : MonoBehaviour
 	[SerializeField]
 	private Camera _mainCamera;
 	[SerializeField]
-	private TMP_Text _scoreField = default;
+	private IntData _currentScore = default;
 	[SerializeField]
-	private TMP_Text _timeField = default;
+	private FloatData _timeRemaining = default;
 	[SerializeField]
 	private GameObject _endGameCanvas = default;
 
@@ -47,8 +48,6 @@ public class GameController : MonoBehaviour
 	private float _gameTime;
 	private float _nextMoleSpawn;
     private float _totalBehaviourChance = 0;
-
-	public int GameScore { get; private set; }
 
 	private Transform _moleCollection;
 	private bool isSetup = false;
@@ -87,10 +86,6 @@ public class GameController : MonoBehaviour
 		PreCreateMoles();
 	}
 
-	private void UpdateScore(float newScore) {
-		_scoreField.text = $"{newScore} points";
-	}
-
 	private void ResetGame() {
 		if (_moleCollection != null)
 		{
@@ -103,8 +98,7 @@ public class GameController : MonoBehaviour
 
 		_gameTime = 0f;
 		_nextMoleSpawn = _baseTimeBetweenMoles;
-		GameScore = 0;
-		UpdateScore(GameScore);
+        _currentScore.Value = 0;
 
 		if (_gridSize.x <= 0) _gridSize.x = 1;
 		if (_gridSize.y <= 0) _gridSize.y = 1;
@@ -179,13 +173,12 @@ public class GameController : MonoBehaviour
 
     private void MissedMole()
     {
-
+        _currentScore.Value -= 5;
     }
 
     private void MoleHit(MoleController moleController)
 	{
-		GameScore += moleController.Behaviour._scoreAdjustmentOnClick;
-		UpdateScore(GameScore);
+        _currentScore.Value += moleController.Behaviour._scoreAdjustmentOnClick;
 		moleController.PopDownMole();
 		_inactiveMoles.Add(moleController);
 	}
@@ -193,7 +186,7 @@ public class GameController : MonoBehaviour
 	private void HandleGameLogic()
 	{
 		_gameTime += Time.deltaTime;
-		_timeField.text = (_playtimeInSeconds - _gameTime).ToString("00.00") + " s";
+		_timeRemaining.Value = _playtimeInSeconds - _gameTime;
 		if (_gameTime >= _playtimeInSeconds) EndGame();
 		else if (_gameTime >= _nextMoleSpawn) {
 			SpawnNewMole();
