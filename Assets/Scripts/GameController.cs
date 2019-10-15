@@ -23,9 +23,9 @@ public class GameController : MonoBehaviour
 	private float _baseMoleActiveTime = 2f;
 	[SerializeField]
 	private MoleController _molePrefab = default;
-    [SerializeField]
-    private List<MoleBehaviour> _possibleMoleBehaviours = new List<MoleBehaviour>();
-    [SerializeField]
+	[SerializeField]
+	private List<MoleBehaviour> _possibleMoleBehaviours = new List<MoleBehaviour>();
+	[SerializeField]
 	private LayerMask _moleLayerMask = default;
 
 
@@ -47,7 +47,7 @@ public class GameController : MonoBehaviour
 
 	private float _gameTime;
 	private float _nextMoleSpawn;
-    private float _totalBehaviourChance = 0;
+	private float _totalBehaviourChance = 0;
 
 	private Transform _moleCollection;
 	private bool isSetup = false;
@@ -60,12 +60,12 @@ public class GameController : MonoBehaviour
 		_screenBotLeft = _mainCamera.ScreenToWorldPoint(new Vector3(Screen.width * _fieldAnchorMin.x, Screen.height * _fieldAnchorMin.y, _mainCamera.transform.position.y));
 		_screenTopRight = _mainCamera.ScreenToWorldPoint(new Vector3(Screen.width * _fieldAnchorMax.x, Screen.height * _fieldAnchorMax.y, _mainCamera.transform.position.y));
 
-        for (int i = 0; i < _possibleMoleBehaviours.Count; i++)
-        {
-            _totalBehaviourChance += _possibleMoleBehaviours[i]._ChanceForBehaviour;
-        }
+		for (int i = 0; i < _possibleMoleBehaviours.Count; i++)
+		{
+			_totalBehaviourChance += _possibleMoleBehaviours[i]._ChanceForBehaviour;
+		}
 
-        isSetup = true;
+		isSetup = true;
 	}
 
 	private void OnEnable()
@@ -98,7 +98,7 @@ public class GameController : MonoBehaviour
 
 		_gameTime = 0f;
 		_nextMoleSpawn = _baseTimeBetweenMoles;
-        _currentScore.Value = 0;
+		_currentScore.Value = 0;
 
 		if (_gridSize.x <= 0) _gridSize.x = 1;
 		if (_gridSize.y <= 0) _gridSize.y = 1;
@@ -167,14 +167,14 @@ public class GameController : MonoBehaviour
 		}
 	}
 
-    private void MissedMole()
-    {
-        _currentScore.Value -= 5;
-    }
-
-    private void MoleHit(MoleController moleController)
+	private void MissedMole()
 	{
-        _currentScore.Value += moleController.Behaviour._scoreAdjustmentOnClick;
+		_currentScore.Value -= 5;
+	}
+
+	private void MoleHit(MoleController moleController)
+	{
+		_currentScore.Value += moleController.Behaviour._scoreAdjustmentOnClick;
 		moleController.PopDownMole();
 		_inactiveMoles.Add(moleController);
 	}
@@ -191,7 +191,7 @@ public class GameController : MonoBehaviour
 	}
 
 	private void EndGame() {
-		MenuManager.Instance.TransitionToMenu(_endGameCanvas);
+		MenuController.Instance.TransitionToMenu(_endGameCanvas);
 	}
 
 	private void SpawnNewMole()
@@ -203,18 +203,18 @@ public class GameController : MonoBehaviour
 		_activeMoles.Add(MoleToSpawn);
 	}
 
-    private MoleBehaviour GetRandomMoleBehaviour()
-    {
-        float chance = Random.Range(0, _totalBehaviourChance);
-        for (int i = 0; i < _possibleMoleBehaviours.Count; i++)
-        {
-            chance -= _possibleMoleBehaviours[i]._ChanceForBehaviour;
-            if (chance <= 0) return _possibleMoleBehaviours[i];
-        }
-        return _possibleMoleBehaviours[_possibleMoleBehaviours.Count - 1];
-    }
+	private MoleBehaviour GetRandomMoleBehaviour()
+	{
+		float chance = Random.Range(0, _totalBehaviourChance);
+		for (int i = 0; i < _possibleMoleBehaviours.Count; i++)
+		{
+			chance -= _possibleMoleBehaviours[i]._ChanceForBehaviour;
+			if (chance <= 0) return _possibleMoleBehaviours[i];
+		}
+		return _possibleMoleBehaviours[_possibleMoleBehaviours.Count - 1];
+	}
 
-    private void MoleTimeout(MoleController timedoutMole) {
+	private void MoleTimeout(MoleController timedoutMole) {
 		_activeMoles.Remove(timedoutMole);
 		_inactiveMoles.Add(timedoutMole);
 	}

@@ -3215,7 +3215,7 @@ GameObject:
   - component: {fileID: 1243585128}
   - component: {fileID: 1243585129}
   m_Layer: 0
-  m_Name: MenuManager
+  m_Name: MenuController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3405,7 +3405,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1388731501}
   m_Layer: 0
-  m_Name: Managers
+  m_Name: Controllers
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3659,7 +3659,7 @@ GameObject:
   - component: {fileID: 1482188357}
   - component: {fileID: 1482188356}
   m_Layer: 0
-  m_Name: HighScoreManager
+  m_Name: HighScoreController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

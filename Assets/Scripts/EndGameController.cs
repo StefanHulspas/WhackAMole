@@ -9,15 +9,15 @@ public class EndGameController : MonoBehaviour
 	[SerializeField]
 	private GameObject _notHighScore = default;
 	[SerializeField]
-	private HighScoreManager _highScoreManager = default;
+	private HighScoreController _highScoreManager = default;
 	[SerializeField]
 	private TMP_Text _finalScoreField = default;
 	[SerializeField]
 	private TMP_InputField _nameField = default;
-    [SerializeField]
-    private IntData _finalScore = default;
+	[SerializeField]
+	private IntData _finalScore = default;
 
-    private void OnEnable()
+	private void OnEnable()
 	{
 		_finalScoreField.text = $"Congratulations!\nYou scored {_finalScore.Value} points!";
 		if (_highScoreManager.IsNewScoreHighScore(_finalScore.Value))

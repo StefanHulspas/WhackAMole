@@ -5,7 +5,7 @@ using UnityEngine;
 public class HighScoreVisualizer : MonoBehaviour
 {
 	[SerializeField]
-	private HighScoreManager _highScoreManager = default;
+	private HighScoreController _highScoreManager = default;
 	[SerializeField]
 	private HighScoreEntry _highScoreEntryPrefab = default;
 

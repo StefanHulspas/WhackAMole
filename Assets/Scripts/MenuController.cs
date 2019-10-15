@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-public class MenuManager : MonoBehaviour
+public class MenuController : MonoBehaviour
 {
-	public static MenuManager Instance { get; private set; }
+	public static MenuController Instance { get; private set; }
 	[SerializeField]
 	private GameObject _currentActiveMenu;
 

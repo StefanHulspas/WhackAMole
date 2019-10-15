@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class HighScoreManager : MonoBehaviour
+public class HighScoreController : MonoBehaviour
 {
 	private readonly string _playerPrefKey = "HighScoreList";
 	[SerializeField]
