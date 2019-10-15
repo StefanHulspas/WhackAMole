@@ -2963,6 +2963,7 @@ MonoBehaviour:
     type: 3}
   _possibleMoleBehaviours:
   - {fileID: 11400000, guid: cdba99f2a99483948864ccdd9a745c91, type: 2}
+  - {fileID: 11400000, guid: 4d2df33d8968e5a42a1333bce5e5512d, type: 2}
   _mainCamera: {fileID: 963194227}
 --- !u!1 &1147511923
 GameObject:

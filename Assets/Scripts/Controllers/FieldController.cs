@@ -11,7 +11,7 @@ public class FieldController : MonoBehaviour
 	[SerializeField]
 	private Vector2 _fieldAnchorMax = new Vector2(.95f, .8f);
 	[SerializeField]
-	private MoleController _molePrefab = default;
+	private MoleEntity _molePrefab = default;
 	[SerializeField]
 	private List<MoleBehaviour> _possibleMoleBehaviours = new List<MoleBehaviour>();
 
@@ -21,8 +21,8 @@ public class FieldController : MonoBehaviour
 	private Vector3 _screenBotLeft;
 	private Vector3 _screenTopRight;
 
-	private List<MoleController> _inactiveMoles = new List<MoleController>();
-	private List<MoleController> _activeMoles = new List<MoleController>();
+	private List<MoleEntity> _inactiveMoles = new List<MoleEntity>();
+	private List<MoleEntity> _activeMoles = new List<MoleEntity>();
 	
 	private float _totalBehaviourChance = 0;
 
@@ -45,7 +45,7 @@ public class FieldController : MonoBehaviour
 		_totalBehaviourChance = 0;
 		for (int i = 0; i < _possibleMoleBehaviours.Count; i++)
 		{
-			_totalBehaviourChance += _possibleMoleBehaviours[i]._ChanceForBehaviour;
+			_totalBehaviourChance += _possibleMoleBehaviours[i].ChanceForBehaviour;
 		}
 	}
 	
@@ -63,17 +63,17 @@ public class FieldController : MonoBehaviour
 			for (int y = 0; y < _gridSize.y; y++)
 			{
 				Vector3 position = new Vector3(botMid.x - moleSize * _gridSize.x / 2 + moleSize / 2 + x * moleSize, _screenBotLeft.y, _screenBotLeft.z + moleSize / 2 + y * moleSize);
-				MoleController newMole = Instantiate(_molePrefab, position, Quaternion.identity, transform);
+				MoleEntity newMole = Instantiate(_molePrefab, position, Quaternion.identity, transform);
 				newMole.Setup(moleSize);
 				_inactiveMoles.Add(newMole);
 			}
 		}
 	}
 
-	public MoleController SpawnNewMole()
+	public MoleEntity SpawnNewMole()
 	{
 		if (_inactiveMoles.Count == 0) return null;
-		MoleController MoleToSpawn = _inactiveMoles[Random.Range(0, _inactiveMoles.Count - 1)];
+		MoleEntity MoleToSpawn = _inactiveMoles[Random.Range(0, _inactiveMoles.Count - 1)];
 		_inactiveMoles.Remove(MoleToSpawn);
 		_activeMoles.Add(MoleToSpawn);
 		MoleToSpawn.SetBehaviour(GetRandomMoleBehaviour());
@@ -82,13 +82,13 @@ public class FieldController : MonoBehaviour
 	
 	public void DisableAllMoles()
 	{
-		foreach (MoleController mole in _activeMoles) 
+		foreach (MoleEntity mole in _activeMoles) 
 		{ 
 			DisableMole(mole);
 		}
 	}
 
-	public void DisableMole(MoleController moleToDisable)
+	public void DisableMole(MoleEntity moleToDisable)
 	{
 		_activeMoles.Remove(moleToDisable);
 		_inactiveMoles.Add(moleToDisable);
@@ -100,7 +100,7 @@ public class FieldController : MonoBehaviour
 		float chance = Random.Range(0, _totalBehaviourChance);
 		for (int i = 0; i < _possibleMoleBehaviours.Count; i++)
 		{
-			chance -= _possibleMoleBehaviours[i]._ChanceForBehaviour;
+			chance -= _possibleMoleBehaviours[i].ChanceForBehaviour;
 			if (chance <= 0) return _possibleMoleBehaviours[i];
 		}
 		return _possibleMoleBehaviours[_possibleMoleBehaviours.Count - 1];

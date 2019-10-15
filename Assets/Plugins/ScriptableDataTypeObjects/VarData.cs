@@ -22,6 +22,7 @@ namespace ScriptableDataType
 
 		public void Raise()
 		{
+			if (_listeners == null) return;
 			for (int i = 0; i < _listeners.Count; i++)
 			{
 				_listeners[i].Invoke(_value);

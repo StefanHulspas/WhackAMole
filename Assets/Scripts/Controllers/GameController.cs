@@ -79,7 +79,7 @@ public class GameController : MonoBehaviour
 		RaycastHit raycastHit;
 		if (Physics.Raycast(ray, out raycastHit, 1000, _moleLayerMask))
 		{
-			MoleController moleController = raycastHit.collider.transform.GetComponentInParent<MoleController>();
+			MoleEntity moleController = raycastHit.collider.transform.GetComponentInParent<MoleEntity>();
 			MoleHit(moleController);
 		}
 		else
@@ -93,10 +93,14 @@ public class GameController : MonoBehaviour
 		_currentScore.Value -= 5;
 	}
 
-	private void MoleHit(MoleController moleController)
+	private void MoleHit(MoleEntity moleEntity)
 	{
-		_currentScore.Value += moleController.Behaviour._scoreAdjustmentOnClick;
-		_fieldController.DisableMole(moleController);
+		ChangeScore(moleEntity.Behaviour.AdjustmentOnClick);
+		_fieldController.DisableMole(moleEntity);
+	}
+
+	private void ChangeScore(ScoreAdjustment adjustment) {
+		_currentScore.Value += adjustment.AdjustScoreByAmount;
 	}
 
 	private void HandleGameLogic()
@@ -117,7 +121,7 @@ public class GameController : MonoBehaviour
 
 	private void SpawnNewMole()
 	{
-		MoleController newMole = _fieldController.SpawnNewMole();
+		MoleEntity newMole = _fieldController.SpawnNewMole();
 		if (newMole != null)
 		{
 			newMole.SetActive(_baseMoleActiveTime, MoleTimeout);
@@ -125,8 +129,9 @@ public class GameController : MonoBehaviour
 		}
 	}
 
-	private void MoleTimeout(MoleController timedoutMole) 
+	private void MoleTimeout(MoleEntity timedoutMole)
 	{
+		ChangeScore(timedoutMole.Behaviour.AdjustmentOnTimeout);
 		_fieldController.DisableMole(timedoutMole);
 	}
 }
