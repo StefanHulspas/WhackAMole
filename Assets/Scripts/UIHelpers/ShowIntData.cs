@@ -7,7 +7,7 @@ public class ShowIntData : MonoBehaviour
 	[SerializeField]
 	private IntData _intValue = default;
 
-	private TMP_Text _textField;
+	protected TMP_Text _textField;
 
 	private void OnEnable()
 	{
@@ -20,7 +20,7 @@ public class ShowIntData : MonoBehaviour
 		_intValue.RemoveListener(UpdateValue);
 	}
 
-	private void UpdateValue(int newValue)
+	protected virtual void UpdateValue(int newValue)
 	{
 		_textField.text = newValue.ToString();
 	}

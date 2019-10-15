@@ -7,7 +7,7 @@ public class HighScoreController : MonoBehaviour
 	[SerializeField]
 	private List<PlayerHighScore> _highScores = new List<PlayerHighScore>();
 	private int _highScoreSize = 5;
-
+	
 	private void OnEnable()
 	{
 		if (PlayerPrefs.HasKey(_playerPrefKey))

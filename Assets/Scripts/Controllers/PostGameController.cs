@@ -2,7 +2,7 @@
 using TMPro;
 using UnityEngine;
 
-public class EndGameController : MonoBehaviour
+public class PostGameController : MonoBehaviour
 {
 	[SerializeField]
 	private GameObject _newHighScore = default;

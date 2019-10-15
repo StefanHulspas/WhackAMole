@@ -6,10 +6,9 @@ public class FieldController : MonoBehaviour
 	[Header("Field Settings")]
 	[SerializeField]
 	private Vector2 _gridSize = new Vector2(2, 2);
+	
 	[SerializeField]
-	private Vector2 _fieldAnchorMin = new Vector2(.05f, .05f);
-	[SerializeField]
-	private Vector2 _fieldAnchorMax = new Vector2(.95f, .8f);
+	private RectTransform _spawnField = default;
 	[SerializeField]
 	private MoleEntity _molePrefab = default;
 	[SerializeField]
@@ -18,8 +17,8 @@ public class FieldController : MonoBehaviour
 	[SerializeField]
 	private Camera _mainCamera;
 
-	private Vector3 _screenBotLeft;
-	private Vector3 _screenTopRight;
+	private Vector3 _spawnLimitBotLeft;
+	private Vector3 _spawnLimitTopRight;
 
 	private List<MoleEntity> _inactiveMoles = new List<MoleEntity>();
 	private List<MoleEntity> _activeMoles = new List<MoleEntity>();
@@ -30,13 +29,21 @@ public class FieldController : MonoBehaviour
 	{
 		if (_mainCamera == null) _mainCamera = Camera.main;
 		
-		_screenBotLeft = _mainCamera.ScreenToWorldPoint(new Vector3(Screen.width * _fieldAnchorMin.x, Screen.height * _fieldAnchorMin.y, _mainCamera.transform.position.y));
-		_screenTopRight = _mainCamera.ScreenToWorldPoint(new Vector3(Screen.width * _fieldAnchorMax.x, Screen.height * _fieldAnchorMax.y, _mainCamera.transform.position.y));
+		_spawnLimitBotLeft = _mainCamera.ScreenToWorldPoint(
+			new Vector3(Screen.width * _spawnField.anchorMin.x, 
+						Screen.height * _spawnField.anchorMin.y, 
+						_mainCamera.transform.position.y));
+		_spawnLimitTopRight = _mainCamera.ScreenToWorldPoint(
+			new Vector3(Screen.width * _spawnField.anchorMax.x, 
+						Screen.height * _spawnField.anchorMax.y, 
+						_mainCamera.transform.position.y));
 		
+		//To make sure atleast 1 mole is created
 		if (_gridSize.x <= 0) _gridSize.x = 1;
 		if (_gridSize.y <= 0) _gridSize.y = 1;
 
 		CalculateTotalBehaviourChance();
+
 		PreCreateMoles();
 	}
 
@@ -51,18 +58,26 @@ public class FieldController : MonoBehaviour
 	
 	private void PreCreateMoles()
 	{
-		Vector3 botMid = new Vector3((_screenBotLeft.x + _screenTopRight.x) / 2, _screenBotLeft.y, _screenBotLeft.z);
-		float screenWorldWidth = _screenTopRight.x - _screenBotLeft.x;
-		float screenWorldHeight = _screenTopRight.z - _screenBotLeft.z;
+		/* To ensure all moles are on the screen are visible I create them from the bottom up depending on the grid
+		 * So I first calculate the bottom middle position as a starting point
+		 */
+		Vector3 botMid = new Vector3((_spawnLimitBotLeft.x + _spawnLimitTopRight.x) / 2, _spawnLimitBotLeft.y, _spawnLimitBotLeft.z);
+
+		/* Then I calculate the maximum size of the squares to fill the field
+		 */
+		float screenWorldWidth = _spawnLimitTopRight.x - _spawnLimitBotLeft.x;
+		float screenWorldHeight = _spawnLimitTopRight.z - _spawnLimitBotLeft.z;
 		float possibleMoleWidth = screenWorldWidth / _gridSize.x;
 		float possibleMoleHeight = screenWorldHeight / _gridSize.y;
 		float moleSize = possibleMoleWidth < possibleMoleHeight ? possibleMoleWidth : possibleMoleHeight;
 
+		/* Using these values I can precreate objects so I dont have to recalculate this at runtime
+		 */
 		for (int x = 0; x < _gridSize.x; x++)
 		{
 			for (int y = 0; y < _gridSize.y; y++)
 			{
-				Vector3 position = new Vector3(botMid.x - moleSize * _gridSize.x / 2 + moleSize / 2 + x * moleSize, _screenBotLeft.y, _screenBotLeft.z + moleSize / 2 + y * moleSize);
+				Vector3 position = new Vector3(botMid.x - moleSize * _gridSize.x / 2 + moleSize / 2 + x * moleSize, _spawnLimitBotLeft.y, _spawnLimitBotLeft.z + moleSize / 2 + y * moleSize);
 				MoleEntity newMole = Instantiate(_molePrefab, position, Quaternion.identity, transform);
 				newMole.Setup(moleSize);
 				_inactiveMoles.Add(newMole);
@@ -73,10 +88,9 @@ public class FieldController : MonoBehaviour
 	public MoleEntity SpawnNewMole()
 	{
 		if (_inactiveMoles.Count == 0) return null;
+		
 		MoleEntity MoleToSpawn = _inactiveMoles[Random.Range(0, _inactiveMoles.Count - 1)];
-		_inactiveMoles.Remove(MoleToSpawn);
-		_activeMoles.Add(MoleToSpawn);
-		MoleToSpawn.SetBehaviour(GetRandomMoleBehaviour());
+		ActivateMole(MoleToSpawn);
 		return MoleToSpawn;
 	}
 	
@@ -94,7 +108,13 @@ public class FieldController : MonoBehaviour
 		_inactiveMoles.Add(moleToDisable);
 		moleToDisable.SetInactive();
 	}
-
+	
+	public void ActivateMole(MoleEntity moleToActivate)
+	{
+		_inactiveMoles.Remove(moleToActivate);
+		_activeMoles.Add(moleToActivate);
+		moleToActivate.SetBehaviour(GetRandomMoleBehaviour());
+	}
 	private MoleBehaviour GetRandomMoleBehaviour()
 	{
 		float chance = Random.Range(0, _totalBehaviourChance);

@@ -12,25 +12,33 @@ public class GameController : MonoBehaviour
 	private float _baseMoleActiveTime = 2f;
 	[SerializeField]
 	private float _scoreMultiplierTimeImpact = .95f;
+
 	[SerializeField]
-	private LayerMask _moleLayerMask = default;
-	[SerializeField]
-	private FieldController _fieldController = default;
+	private ScoreAdjustment AdjustmentOnNoHit = default;
 
 
 	[Header("Game Variables In Scene")]
 	[SerializeField]
 	private Camera _mainCamera;
+
 	[SerializeField]
 	private IntData _currentScore = default;
 	[SerializeField]
 	private IntData _scoreMultiplier = default;
 	[SerializeField]
 	private IntData _scoreMultiplierSteps = default;
+
 	[SerializeField]
 	private FloatData _timeRemaining = default;
+
 	[SerializeField]
-	private GameObject _endGameCanvas = default;
+	private GameObject _postGameCanvas = default;
+
+	[SerializeField]
+	private LayerMask _moleLayerMask = default;
+
+	[SerializeField]
+	private FieldController _fieldController = default;
 	
 	private float _gameTime;
 	private float _nextMoleSpawn;
@@ -59,7 +67,9 @@ public class GameController : MonoBehaviour
 	private void HandleInput()
 	{
 		HandleTouch();
-		HandleMouseClick();
+
+		//So I can easily test on the computer
+		//HandleMouseClick();
 	}
 
 	private void HandleMouseClick()
@@ -84,21 +94,15 @@ public class GameController : MonoBehaviour
 	private void CheckPositionForMole(Vector3 position) 
 	{
 		Ray ray = _mainCamera.ScreenPointToRay(position);
-		RaycastHit raycastHit;
-		if (Physics.Raycast(ray, out raycastHit, 1000, _moleLayerMask))
+		if (Physics.Raycast(ray, out RaycastHit raycastHit, 1000, _moleLayerMask))
 		{
 			MoleEntity moleController = raycastHit.collider.transform.GetComponentInParent<MoleEntity>();
 			MoleHit(moleController);
 		}
 		else
 		{
-			MissedMole();
+			ChangeScore(AdjustmentOnNoHit);
 		}
-	}
-
-	private void MissedMole()
-	{
-		_currentScore.Value -= 5;
 	}
 
 	private void MoleHit(MoleEntity moleEntity)
@@ -110,8 +114,7 @@ public class GameController : MonoBehaviour
 	private void ChangeScore(ScoreAdjustment adjustment) {
 		int scoreChange = adjustment.AdjustScoreByAmount;
 		if (adjustment.ResetScoreMultiplier) {
-			_scoreMultiplier.Value = 1;
-			_scoreMultiplierSteps.Value = 2;
+			ResetScoreMultiplier();
 		} else {
 			scoreChange *= _scoreMultiplier.Value;
 			_scoreMultiplierSteps.Value--;
@@ -121,6 +124,12 @@ public class GameController : MonoBehaviour
 			}
 		}
 		_currentScore.Value += scoreChange;
+	}
+
+	private void ResetScoreMultiplier()
+	{
+		_scoreMultiplier.Value = 1;
+		_scoreMultiplierSteps.Value = 2;
 	}
 
 	private void HandleGameLogic()
@@ -136,7 +145,7 @@ public class GameController : MonoBehaviour
 	private void EndGame() 
 	{
 		_fieldController.DisableAllMoles();
-		MenuController.Instance.TransitionToMenu(_endGameCanvas);
+		MenuController.Instance.TransitionToMenu(_postGameCanvas);
 	}
 
 	private void SpawnNewMole()
