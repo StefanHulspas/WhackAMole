@@ -932,7 +932,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56cbd4dd16a59b4409dd89213aa96dbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _intValue: {fileID: 11400000, guid: c5cb3876eb531bc41b9ae18db2b43edd, type: 2}
+  _floatValue: {fileID: 11400000, guid: c5cb3876eb531bc41b9ae18db2b43edd, type: 2}
+  _valueFormat: F
 --- !u!1 &226449859
 GameObject:
   m_ObjectHideFlags: 0
