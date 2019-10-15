@@ -137,16 +137,7 @@ public class GameController : MonoBehaviour
 	private void HandleMouseClick()
 	{
 		if (Input.GetMouseButtonDown(0)) {
-			Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
-			RaycastHit raycastHit;
-			if (Physics.Raycast(ray, out raycastHit, 1000, _moleLayerMask))
-			{
-				MoleController moleController = raycastHit.collider.transform.GetComponentInParent<MoleController>();
-				MoleHit(moleController);
-			} else
-            {
-                MissedMole();
-            }
+			CheckPositionForMole(Input.mousePosition);
 		}
 	}
 
@@ -157,17 +148,22 @@ public class GameController : MonoBehaviour
 		{
 			if (touches[i].phase == TouchPhase.Began)
 			{
-				Ray ray = _mainCamera.ScreenPointToRay(touches[i].position);
-				RaycastHit raycastHit;
-				if (Physics.Raycast(ray, out raycastHit, 1000, _moleLayerMask))
-				{
-					MoleController moleController = raycastHit.collider.transform.GetComponentInParent<MoleController>();
-					MoleHit(moleController);
-				} else
-                {
-                    MissedMole();
-                }
+				CheckPositionForMole(touches[i].position);
 			}
+		}
+	}
+
+	private void CheckPositionForMole(Vector3 position) {
+		Ray ray = _mainCamera.ScreenPointToRay(position);
+		RaycastHit raycastHit;
+		if (Physics.Raycast(ray, out raycastHit, 1000, _moleLayerMask))
+		{
+			MoleController moleController = raycastHit.collider.transform.GetComponentInParent<MoleController>();
+			MoleHit(moleController);
+		}
+		else
+		{
+			MissedMole();
 		}
 	}
 
