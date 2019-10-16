@@ -14,7 +14,7 @@ public class HighScoreController : MonoBehaviour
 			JsonUtility.FromJsonOverwrite(PlayerPrefs.GetString(_playerPrefKey), this);
 	}
 
-	private void OnDisable()
+	private void SaveNewData()
 	{
 		PlayerPrefs.SetString(_playerPrefKey, JsonUtility.ToJson(this));
 		PlayerPrefs.Save();
@@ -32,6 +32,7 @@ public class HighScoreController : MonoBehaviour
 		while (_highScores.Count > _highScoreSize) {
 			_highScores.RemoveAt(_highScoreSize);
 		}
+		SaveNewData();
 	}
 
 	public List<PlayerHighScore> GetCurrentHighScores => _highScores;
