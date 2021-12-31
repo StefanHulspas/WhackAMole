@@ -53,9 +53,9 @@ public class GameController : MonoBehaviour
 	{
 		_gameTime = 0f;
 		_nextMoleSpawn = _baseTimeBetweenMoles;
-		_currentScore.Value = 0;
-		_scoreMultiplier.Value = 1;
-		_scoreMultiplierSteps.Value = 2;
+		_currentScore = 0;
+		_scoreMultiplier = 1;
+		_scoreMultiplierSteps = 2;
 	}
 
 	private void Update()
@@ -116,26 +116,26 @@ public class GameController : MonoBehaviour
 		if (adjustment.ResetScoreMultiplier) {
 			ResetScoreMultiplier();
 		} else {
-			scoreChange *= _scoreMultiplier.Value;
-			_scoreMultiplierSteps.Value--;
-			if (_scoreMultiplierSteps.Value == 0) {
+			scoreChange *= _scoreMultiplier;
+			_scoreMultiplierSteps--;
+			if (_scoreMultiplierSteps == 0) {
 				_scoreMultiplier++;
-				_scoreMultiplierSteps.Value = _scoreMultiplier * 2;
+				_scoreMultiplierSteps = _scoreMultiplier * 2;
 			}
 		}
-		_currentScore.Value += scoreChange;
+		_currentScore += scoreChange;
 	}
 
 	private void ResetScoreMultiplier()
 	{
-		_scoreMultiplier.Value = 1;
-		_scoreMultiplierSteps.Value = 2;
+		_scoreMultiplier = 1;
+		_scoreMultiplierSteps = 2;
 	}
 
 	private void HandleGameLogic()
 	{
 		_gameTime += Time.deltaTime;
-		_timeRemaining.Value = _playtimeInSeconds - _gameTime;
+		_timeRemaining = _playtimeInSeconds - _gameTime;
 		if (_gameTime >= _playtimeInSeconds) EndGame();
 		else if (_gameTime >= _nextMoleSpawn) {
 			SpawnNewMole();
@@ -159,8 +159,8 @@ public class GameController : MonoBehaviour
 	}
 
 	private float AdjustTimeByScoreMultiplier(float timeToAdjust) {
-		if (_scoreMultiplier.Value == 1) return timeToAdjust;
-		return timeToAdjust * Mathf.Pow(_scoreMultiplierTimeImpact, _scoreMultiplier.Value - 1);
+		if (_scoreMultiplier == 1) return timeToAdjust;
+		return timeToAdjust * Mathf.Pow(_scoreMultiplierTimeImpact, _scoreMultiplier - 1);
 	}
 
 	private void MoleTimeout(MoleEntity timedoutMole)

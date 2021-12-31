@@ -51,5 +51,9 @@ namespace ScriptableDataType
 				Raise();
 			}
 		}
+
+		public static implicit operator T (VarData<T> varData) {
+			return varData.Value;
+		}
 	}
 }

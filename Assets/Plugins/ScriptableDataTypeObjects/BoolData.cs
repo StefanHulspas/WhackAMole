@@ -6,11 +6,9 @@ namespace ScriptableDataType
 	public class BoolData : VarData<bool>
 	{
 		public BoolData(bool b):base(b) { }
-
-		public static BoolData operator !(BoolData a)
-		{
-			a.Value = !a.Value;
-			return a;
+		
+		public static implicit operator BoolData (bool data) {
+			return new BoolData(data);
 		}
 	}
 }
